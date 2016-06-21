@@ -6,7 +6,7 @@ import (
 )
 
 type URL struct {
-	url    string
+	path   string
 	params []string
 }
 
@@ -23,7 +23,7 @@ func New() *URLStore {
 var rex = regexp.MustCompile(`:[\w]+`)
 
 func (u *URLStore) MustAdd(name, path string) string {
-	m := URL{url: path}
+	m := URL{path: path}
 	s := rex.FindAll([]byte(path), -1)
 	for i := range s {
 		m.params = append(m.params, string(s[i]))
@@ -43,10 +43,9 @@ func (u *URLStore) MustReverse(name string, params ...string) string {
 	if len(params) != len(url.params) {
 		panic("The length of params argument is different to url's params")
 	}
-	ur := url.url
-	for i, k := range url.params {
-		ur = strings.Replace(ur, k, params[i], 1)
+	ur := url.path
+	for i, v := range url.params {
+		ur = strings.Replace(ur, v, params[i], 1)
 	}
 	return ur
 }
-
