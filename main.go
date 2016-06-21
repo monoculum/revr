@@ -10,29 +10,29 @@ import (
 )
 
 // URL indicates the path and params of a url
-type URL struct {
+type url struct {
 	path   string
 	params []string
 }
 
 // URLs a map of urls by its name registered
-type URLs map[string]URL
+type urls map[string]url
 
 // URLStore a store of urls
 type URLStore struct {
-	store URLs
+	store urls
 }
 
 // New returns a URLStore
 func New() *URLStore {
-	return &URLStore{store: make(URLs)}
+	return &URLStore{store: make(urls)}
 }
 
 var rex = regexp.MustCompile(`:[\w]+`)
 
 // MustAdd adds a route and it panic if error
 func (u *URLStore) MustAdd(name, path string) string {
-	m := URL{path: path}
+	m := url{path: path}
 	s := rex.FindAll([]byte(path), -1)
 	for i := range s {
 		m.params = append(m.params, string(s[i]))
@@ -46,16 +46,16 @@ func (u *URLStore) MustAdd(name, path string) string {
 
 // MustReverse get a reversed url and it panic if error
 func (u *URLStore) MustReverse(name string, params ...string) string {
-	url, ok := u.store[name]
+	ur, ok := u.store[name]
 	if !ok {
 		panic("The url not exists...")
 	}
-	if len(params) != len(url.params) {
+	if len(params) != len(ur.params) {
 		panic("The length of params argument is different to url's params")
 	}
-	ur := url.path
-	for i, v := range url.params {
-		ur = strings.Replace(ur, v, params[i], 1)
+	r := ur.path
+	for i, v := range ur.params {
+		r = strings.Replace(r, v, params[i], 1)
 	}
-	return ur
+	return r
 }
